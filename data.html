@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>데이터 관리</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #dee2e6;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f1f1;
+        }
+        .button {
+            padding: 5px 10px;
+            margin: 2px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button.delete {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+<h2>입력된 데이터 관리</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>이름</th>
+            <th>회차</th>
+            <th>최초 등록일</th>
+            <th>측정 날짜</th>
+            <th>생년월일</th>
+            <th>학교명/학년</th>
+            <th>종목</th>
+            <th>작업</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for session in sessions %}
+        <tr>
+            <td>{{ session.id }}</td>
+            <td>{{ session.name }}</td>
+            <td>{{ session.session }}</td>
+            <td>{{ session.registrationDate }}</td>
+            <td>{{ session.measurementDate }}</td>
+            <td>{{ session.birthDate }}</td>
+            <td>{{ session.school }}</td>
+            <td>{{ session.sport }}</td>
+            <td>
+                <a href="{{ url_for('edit', id=session.id) }}" class="button">수정</a>
+                <a href="{{ url_for('delete', id=session.id) }}" class="button delete" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('index') }}" class="button">새 데이터 입력</a>
+
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRAINING REPORT</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            flex: 1 1 150px;
+            margin-right: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            flex: 2 1 300px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .form-group .radio-group {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        button {
+            width: 48%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .search-container {
+            border: 2px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .center-button {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .measurement-section {
+            border: 2px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .measurement-section h3 {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>TRAINING REPORT</h2>
+
+    <!-- 검색 기능 추가 -->
+    <div class="search-container">
+        <form action="/search" method="GET">
+            <div class="form-group">
+                <label for="searchName">검색 이름:</label>
+                <input type="text" id="searchName" name="searchName" required>
+            </div>
+            <div class="center-button">
+                <button type="submit">검색</button>
+            </div>
+        </form>
+    </div>
+
+    <form action="/" method="POST">
+        <!-- 인적사항 입력 -->
+        <div class="form-group">
+            <label for="registrationDate">최초 등록일:</label>
+            <input type="date" id="registrationDate" name="registrationDate" value="{{ registrationDate or '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="measurementDate">측정 날짜:</label>
+            <input type="date" id="measurementDate" name="measurementDate" value="{{ measurementDate or '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="name">이름:</label>
+            <input type="text" id="name" name="name" value="{{ name or '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="birthDate">생년월일:</label>
+            <input type="date" id="birthDate" name="birthDate" value="{{ birthDate or '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="school">학교명/학년:</label>
+            <input type="text" id="school" name="school" value="{{ school or '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="sport">종목:</label>
+            <input type="text" id="sport" name="sport" value="{{ sport or '' }}" required>
+        </div>
+
+        <!-- 회차 선택 -->
+        <div class="form-group">
+            <label>회차 선택:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="session" value="1" required> 1회차</label>
+                <label><input type="radio" name="session" value="2"> 2회차</label>
+                <label><input type="radio" name="session" value="3"> 3회차</label>
+                <label><input type="radio" name="session" value="4"> 4회차</label>
+            </div>
+        </div>
+
+    <!-- 신체 기능 입력 -->
+    <div class="measurement-section">
+    <h3>신체 기능 측정</h3>
+
+    <div class="form-group">
+        <label for="balanceStatic">밸런스(정적 균형):</label>
+        <input type="number" id="balanceStatic" name="balanceStatic" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="balanceDynamic">밸런스(동적 균형):</label>
+        <input type="number" id="balanceDynamic" name="balanceDynamic" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="endurance">근지구력(4min):</label>
+        <input type="number" id="endurance" name="endurance" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="strengthSpeed">근력(speed 1min):</label>
+        <input type="number" id="strengthSpeed" name="strengthSpeed" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="speedJump">스피드(점프):</label>
+        <input type="number" id="speedJump" name="speedJump" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="speedShuttle">스피드(왕복 1min):</label>
+        <input type="number" id="speedShuttle" name="speedShuttle" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="legPress">근력(하지 press):</label>
+        <input type="number" id="legPress" name="legPress" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="armPull">근력(상지 pull):</label>
+        <input type="number" id="armPull" name="armPull" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="coreDynamic">코어(동적 균형):</label>
+        <input type="number" id="coreDynamic" name="coreDynamic" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="rotation">회전(rotation):</label>
+        <input type="number" id="rotation" name="rotation" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="swing">회전(swing):</label>
+        <input type="number" id="swing" name="swing" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="agility">민첩성(motion):</label>
+        <input type="number" id="agility" name="agility" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="upperBalance">상지 밸런스:</label>
+        <input type="number" id="upperBalance" name="upperBalance" min="1" max="99" required>
+    </div>
+
+    <div class="form-group">
+        <label for="lowerBalance">하지 밸런스:</label>
+        <input type="number" id="lowerBalance" name="lowerBalance" min="1" max="99" required>
+    </div>
+
+        <div class="button-group">
+            <button type="submit">결과보기</button>
+            <button type="submit" formaction="/download_csv">CSV로 저장</button>
+        </div>
+    </form>
+</div>
+
+<!-- JavaScript for Popup Messages -->
+<script>
+    // Flask에서 전달된 팝업 메시지 처리
+    const popupMessage = "{{ popup_message or '' }}";
+    const showResultsButton = "{{ show_results_button or false }}";
+
+    if (popupMessage) {
+        let message = popupMessage;
+        if (showResultsButton === 'True') {
+            const result = window.confirm(`${message}\n\n확인: 이전 측정결과 보기\n취소버튼: 데이터 입력 계속`);
+            if (result) {
+                // "확인" 버튼을 누르면 results 페이지로 이동
+                window.location.href = "/results/{{ name }}";
+            }
+            // "취소버튼"을 누르면 아무 것도 하지 않음 (현재 페이지 유지)
+        } else {
+            alert(message);
+        }
+    }
+</script>
+
+</body>
+</html>

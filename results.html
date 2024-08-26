@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ name }}님의 결과 보기</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .chart-container {
+            width: 80%;
+            height: 400px;
+            margin-bottom: 40px;
+        }
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+            justify-items: center;
+        }
+        .chart-item {
+            width: 100%;
+            height: 300px;
+        }
+        .chart-item canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<h2>{{ name }}님의 이번 세션 결과 시각화</h2>
+
+<div class="chart-container">
+    <canvas id="overallChart"></canvas>
+</div>
+
+<h2>항목별 시각화 (세션별 비교)</h2>
+
+<div class="chart-grid">
+    <div class="chart-item"><canvas id="chartBalanceStatic"></canvas></div>
+    <div class="chart-item"><canvas id="chartBalanceDynamic"></canvas></div>
+    <div class="chart-item"><canvas id="chartEndurance"></canvas></div>
+    <div class="chart-item"><canvas id="chartStrengthSpeed"></canvas></div>
+    <div class="chart-item"><canvas id="chartSpeedJump"></canvas></div>
+    <div class="chart-item"><canvas id="chartSpeedShuttle"></canvas></div>
+    <div class="chart-item"><canvas id="chartLegPress"></canvas></div>
+    <div class="chart-item"><canvas id="chartArmPull"></canvas></div>
+    <div class="chart-item"><canvas id="chartCoreDynamic"></canvas></div>
+    <div class="chart-item"><canvas id="chartRotation"></canvas></div>
+    <div class="chart-item"><canvas id="chartSwing"></canvas></div>
+    <div class="chart-item"><canvas id="chartAgility"></canvas></div>
+    <div class="chart-item"><canvas id="chartUpperBalance"></canvas></div>
+    <div class="chart-item"><canvas id="chartLowerBalance"></canvas></div>
+</div>
+
+<div class="button-group">
+    <a href="{{ url_for('index') }}" class="button">처음으로</a>
+    <a href="{{ url_for('data') }}" class="button">관리자 페이지</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Flask에서 전달된 세션 데이터를 확인합니다.
+    const sessions = {{ sessions | tojson | safe }};
+    console.log(sessions);
+
+    // 가장 최근 세션 데이터를 가져옵니다.
+    const currentSession = sessions[sessions.length - 1];
+    console.log(currentSession);
+
+    // 상단의 각 항목 이름 (라벨)
+    const labels = [
+        '밸런스(정적 균형)', '밸런스(동적 균형)', '근지구력(4min)', '근력(speed 1min)', '스피드(점프)', 
+        '스피드(왕복 1min)', '근력(하지 press)', '근력(상지 pull)', '코어(동적 균형)', '회전(rotation)', 
+        '회전(swing)', '민첩성(motion)', '상지 밸런스', '하지 밸런스'
+    ];
+
+    // 상단의 각 항목에 해당하는 데이터 (이번 세션 결과)
+    const data = [
+        currentSession.balanceStatic,
+        currentSession.balanceDynamic,
+        currentSession.endurance,
+        currentSession.strengthSpeed,
+        currentSession.speedJump,
+        currentSession.speedShuttle,
+        currentSession.legPress,
+        currentSession.armPull,
+        currentSession.coreDynamic,
+        currentSession.rotation,
+        currentSession.swing,
+        currentSession.agility,
+        currentSession.upperBalance,
+        currentSession.lowerBalance
+    ];
+
+    // 상단의 막대그래프 생성 (이번 세션 결과)
+    const ctx = document.getElementById('overallChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '이번 세션 결과',
+                data: data,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // 기존 항목별 시각화를 위한 차트 생성 함수 (세션별 비교)
+    const createChart = (ctx, label, data, backgroundColor, borderColor) => {
+        return new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sessions.map(session => session.measurementDate),
+                datasets: [{
+                    label: label,
+                    data: data,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    };
+
+    // 기존 항목별 시각화 데이터 (세션별 비교)
+    const colors = {
+        balanceStatic: 'rgba(255, 99, 132, 0.2)',
+        balanceDynamic: 'rgba(54, 162, 235, 0.2)',
+        endurance: 'rgba(255, 206, 86, 0.2)',
+        strengthSpeed: 'rgba(75, 192, 192, 0.2)',
+        speedJump: 'rgba(153, 102, 255, 0.2)',
+        speedShuttle: 'rgba(255, 159, 64, 0.2)',
+        legPress: 'rgba(255, 99, 132, 0.2)',
+        armPull: 'rgba(54, 162, 235, 0.2)',
+        coreDynamic: 'rgba(255, 206, 86, 0.2)',
+        rotation: 'rgba(75, 192, 192, 0.2)',
+        swing: 'rgba(153, 102, 255, 0.2)',
+        agility: 'rgba(255, 159, 64, 0.2)',
+        upperBalance: 'rgba(255, 99, 132, 0.2)',
+        lowerBalance: 'rgba(54, 162, 235, 0.2)'
+    };
+
+    const borderColors = {
+        balanceStatic: 'rgba(255, 99, 132, 1)',
+        balanceDynamic: 'rgba(54, 162, 235, 1)',
+        endurance: 'rgba(255, 206, 86, 1)',
+        strengthSpeed: 'rgba(75, 192, 192, 1)',
+        speedJump: 'rgba(153, 102, 255, 1)',
+        speedShuttle: 'rgba(255, 159, 64, 1)',
+        legPress: 'rgba(255, 99, 132, 1)',
+        armPull: 'rgba(54, 162, 235, 1)',
+        coreDynamic: 'rgba(255, 206, 86, 1)',
+        rotation: 'rgba(75, 192, 192, 1)',
+        swing: 'rgba(153, 102, 255, 1)',
+        agility: 'rgba(255, 159, 64, 1)',
+        upperBalance: 'rgba(255, 99, 132, 1)',
+        lowerBalance: 'rgba(54, 162, 235, 1)'
+    };
+
+    const getDataForChart = (attribute) => {
+        return sessions.map(session => session[attribute] || 0);
+    };
+
+    // 기존 항목별 시각화 차트 생성 (세션별 비교)
+    createChart(document.getElementById('chartBalanceStatic').getContext('2d'), '밸런스(정적 균형)', getDataForChart('balanceStatic'), colors.balanceStatic, borderColors.balanceStatic);
+    createChart(document.getElementById('chartBalanceDynamic').getContext('2d'), '밸런스(동적 균형)', getDataForChart('balanceDynamic'), colors.balanceDynamic, borderColors.balanceDynamic);
+    createChart(document.getElementById('chartEndurance').getContext('2d'), '근지구력(4min)', getDataForChart('endurance'), colors.endurance, borderColors.endurance);
+    createChart(document.getElementById('chartStrengthSpeed').getContext('2d'), '근력(speed 1min)', getDataForChart('strengthSpeed'), colors.strengthSpeed, borderColors.strengthSpeed);
+    createChart(document.getElementById('chartSpeedJump').getContext('2d'), '스피드(점프)', getDataForChart('speedJump'), colors.speedJump, borderColors.speedJump);
+    createChart(document.getElementById('chartSpeedShuttle').getContext('2d'), '스피드(왕복 1min)', getDataForChart('speedShuttle'), colors.speedShuttle, borderColors.speedShuttle);
+    createChart(document.getElementById('chartLegPress').getContext('2d'), '근력(하지 press)', getDataForChart('legPress'), colors.legPress, borderColors.legPress);
+    createChart(document.getElementById('chartArmPull').getContext('2d'), '근력(상지 pull)', getDataForChart('armPull'), colors.armPull, borderColors.armPull);
+    createChart(document.getElementById('chartCoreDynamic').getContext('2d'), '코어(동적 균형)', getDataForChart('coreDynamic'), colors.coreDynamic, borderColors.coreDynamic);
+    createChart(document.getElementById('chartRotation').getContext('2d'), '회전(rotation)', getDataForChart('rotation'), colors.rotation, borderColors.rotation);
+    createChart(document.getElementById('chartSwing').getContext('2d'), '회전(swing)', getDataForChart('swing'), colors.swing, borderColors.swing);
+    createChart(document.getElementById('chartAgility').getContext('2d'), '민첩성(motion)', getDataForChart('agility'), colors.agility, borderColors.agility);
+    createChart(document.getElementById('chartUpperBalance').getContext('2d'), '상지 밸런스', getDataForChart('upperBalance'), colors.upperBalance, borderColors.upperBalance);
+    createChart(document.getElementById('chartLowerBalance').getContext('2d'), '하지 밸런스', getDataForChart('lowerBalance'), colors.lowerBalance, borderColors.lowerBalance);
+
+</script>
+
+</body>
+</html>
